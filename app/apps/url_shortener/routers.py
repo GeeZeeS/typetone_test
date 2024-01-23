@@ -18,7 +18,7 @@ shorten_url_router = APIRouter(
 @shorten_url_router.post("/shorten", response_model=UrlShortenResponse, status_code=status.HTTP_201_CREATED)
 def shorten_url(url_shorten: UrlShortenCreate, db: Session = Depends(get_db)):
     if url_shorten.shortcode:
-        if filter_shorten_url(url_shorten.shortcode, db):
+        if filter_shorten_url(db, url_shorten.shortcode):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="Shortcode already in use"
             )
@@ -28,25 +28,25 @@ def shorten_url(url_shorten: UrlShortenCreate, db: Session = Depends(get_db)):
             )
     else:
         url_shorten.shortcode = generate_shortcode()
-    db_url_shorten = create_shorten_url(url_shorten, db)
+    db_url_shorten = create_shorten_url(db, url_shorten)
     return db_url_shorten
 
 
 @shorten_url_router.get("/{shortcode}")
 def redirect_to_url(shortcode: str, db: Session = Depends(get_db)):
-    db_url_shorten = filter_shorten_url(shortcode, db)
+    db_url_shorten = filter_shorten_url(db, shortcode)
     if not db_url_shorten:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Shortcode not found"
         )
 
-    url_record = update_shorten_url(db_url_shorten, db)
+    url_record = update_shorten_url(db, db_url_shorten)
     return RedirectResponse(url=url_record.url, status_code=302)
 
 
 @shorten_url_router.get("/{shortcode}/stats", response_model=UrlStatsResponse, status_code=status.HTTP_200_OK)
 def url_stats(shortcode: str, db: Session = Depends(get_db)):
-    db_url_shorten = filter_shorten_url(shortcode, db)
+    db_url_shorten = filter_shorten_url(db, shortcode)
     if not db_url_shorten:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Shortcode not found"
