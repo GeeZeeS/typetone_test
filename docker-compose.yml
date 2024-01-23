@@ -3,7 +3,6 @@ version: '3.10'
 services:
   web:
     build: ./app
-    command: bash -c 'alembic upgrade head && uvicorn main:app --host 0.0.0.0 --reload'
     volumes:
       - ./app/:/app/
     env_file:

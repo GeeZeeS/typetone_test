@@ -14,5 +14,7 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+# run migrations and startup process, sleep 3 secs for DB initialization.
+CMD ["sh", "-c", "sleep 3 && alembic upgrade head && uvicorn main:app --host 0.0.0.0"]
 # copy project
 COPY . .
