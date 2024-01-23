@@ -11,4 +11,3 @@ def validate_shortcode(shortcode: str) -> bool:
 def generate_shortcode() -> str:
     characters = ascii_letters + digits + "_"
     return "".join(choice(characters) for _ in range(6))
-

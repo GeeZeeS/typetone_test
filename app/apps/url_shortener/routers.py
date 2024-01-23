@@ -49,4 +49,3 @@ def url_stats(shortcode: str, db: Session = Depends(get_db)):
     if not db_url_shorten:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Shortcode not found")
     return db_url_shorten
-
